@@ -56,36 +56,36 @@ export const FRAMES: Frame[] = [
       },
     ],
   },
-  {
-    id: 2,
-    name: "Vintage Rose",
-    category: "Vertical",
-    src: "/frame/frame2.png",
-    maxPhotos: 3,
-    positions: [
-      {
-        top: "68px",
-        left: "78px",
-        width: "132px",
-        height: "178px",
-        rotate: "-0.5deg",
-      },
-      {
-        top: "215px",
-        left: "142px",
-        width: "132px",
-        height: "178px",
-        rotate: "0.8deg",
-      },
-      {
-        top: "395px",
-        left: "88px",
-        width: "132px",
-        height: "178px",
-        rotate: "-1.5deg",
-      },
-    ],
-  },
+  // {
+  //   id: 2,
+  //   name: "Vintage Rose",
+  //   category: "Vertical",
+  //   src: "/frame/frame2.png",
+  //   maxPhotos: 3,
+  //   positions: [
+  //     {
+  //       top: "68px",
+  //       left: "78px",
+  //       width: "132px",
+  //       height: "178px",
+  //       rotate: "-0.5deg",
+  //     },
+  //     {
+  //       top: "215px",
+  //       left: "142px",
+  //       width: "132px",
+  //       height: "178px",
+  //       rotate: "0.8deg",
+  //     },
+  //     {
+  //       top: "395px",
+  //       left: "88px",
+  //       width: "132px",
+  //       height: "178px",
+  //       rotate: "-1.5deg",
+  //     },
+  //   ],
+  // },
   {
     id: 3,
     name: "Eternal Gold",
@@ -145,35 +145,35 @@ export const FRAMES: Frame[] = [
     ],
   },
 
-  {
-    id: 4,
-    name: "Cinema Story",
-    category: "Story",
-    src: "/frame/frame2.png",
-    maxPhotos: 4,
+  // {
+  //   id: 4,
+  //   name: "Cinema Story",
+  //   category: "Story",
+  //   src: "/frame/frame2.png",
+  //   maxPhotos: 4,
 
-    positions: [
-      {
-        top: "68px",
-        left: "78px",
-        width: "132px",
-        height: "178px",
-        rotate: "-0.5deg",
-      },
-      {
-        top: "215px",
-        left: "142px",
-        width: "132px",
-        height: "178px",
-        rotate: "0.8deg",
-      },
-      {
-        top: "395px",
-        left: "88px",
-        width: "132px",
-        height: "178px",
-        rotate: "-1.5deg",
-      },
-    ],
-  },
+  //   positions: [
+  //     {
+  //       top: "68px",
+  //       left: "78px",
+  //       width: "132px",
+  //       height: "178px",
+  //       rotate: "-0.5deg",
+  //     },
+  //     {
+  //       top: "215px",
+  //       left: "142px",
+  //       width: "132px",
+  //       height: "178px",
+  //       rotate: "0.8deg",
+  //     },
+  //     {
+  //       top: "395px",
+  //       left: "88px",
+  //       width: "132px",
+  //       height: "178px",
+  //       rotate: "-1.5deg",
+  //     },
+  //   ],
+  // },
 ];
