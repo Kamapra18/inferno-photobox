@@ -56,36 +56,57 @@ export const FRAMES: Frame[] = [
       },
     ],
   },
-  // {
-  //   id: 2,
-  //   name: "Vintage Rose",
-  //   category: "Vertical",
-  //   src: "/frame/frame2.png",
-  //   maxPhotos: 3,
-  //   positions: [
-  //     {
-  //       top: "68px",
-  //       left: "78px",
-  //       width: "132px",
-  //       height: "178px",
-  //       rotate: "-0.5deg",
-  //     },
-  //     {
-  //       top: "215px",
-  //       left: "142px",
-  //       width: "132px",
-  //       height: "178px",
-  //       rotate: "0.8deg",
-  //     },
-  //     {
-  //       top: "395px",
-  //       left: "88px",
-  //       width: "132px",
-  //       height: "178px",
-  //       rotate: "-1.5deg",
-  //     },
-  //   ],
-  // },
+  {
+    id: 2,
+    name: "Vintage Rose",
+    category: "Vertical",
+    src: "/frame/frame6.png",
+    maxPhotos: 6,
+    positions: [
+      {
+        top: "260px",
+        left: "160px",
+        width: "400px",
+        height: "400px",
+        rotate: "-0.5deg",
+      },
+      {
+        top: "270px",
+        left: "640px",
+        width: "400px",
+        height: "400px",
+        rotate: "0.8deg",
+      },
+      {
+        top: "750px",
+        left: "160px",
+        width: "400px",
+        height: "400px",
+        rotate: "-1.5deg",
+      },
+      {
+        top: "750px",
+        left: "640px",
+        width: "400px",
+        height: "400px",
+        rotate: "-1.5deg",
+      },
+      {
+        top: "1230px",
+        left: "160px",
+        width: "400px",
+        height: "400px",
+        rotate: "-1.5deg",
+      },
+      {
+        top: "1230px",
+        left: "640px",
+        width: "400px",
+        height: "400px",
+        rotate: "-1.5deg",
+      },
+    ],
+  },
   {
     id: 3,
     name: "Eternal Gold",
@@ -145,35 +166,145 @@ export const FRAMES: Frame[] = [
     ],
   },
 
-  // {
-  //   id: 4,
-  //   name: "Cinema Story",
-  //   category: "Story",
-  //   src: "/frame/frame2.png",
-  //   maxPhotos: 4,
+  {
+    id: 4,
+    name: "Cinema Story",
+    category: "Story",
+    src: "/frame/frame7.png",
+    maxPhotos: 6,
 
-  //   positions: [
-  //     {
-  //       top: "68px",
-  //       left: "78px",
-  //       width: "132px",
-  //       height: "178px",
-  //       rotate: "-0.5deg",
-  //     },
-  //     {
-  //       top: "215px",
-  //       left: "142px",
-  //       width: "132px",
-  //       height: "178px",
-  //       rotate: "0.8deg",
-  //     },
-  //     {
-  //       top: "395px",
-  //       left: "88px",
-  //       width: "132px",
-  //       height: "178px",
-  //       rotate: "-1.5deg",
-  //     },
-  //   ],
-  // },
+    positions: [
+      {
+        top: "300px",
+        left: "200px",
+        width: "400px",
+        height: "590px",
+        rotate: "-0.5deg",
+      },
+      {
+        top: "300px",
+        left: "600px",
+        width: "385px",
+        height: "295px",
+        rotate: "0.8deg",
+      },
+      {
+        top: "600px",
+        left: "610px",
+        width: "385px",
+        height: "295px",
+        rotate: "-1.5deg",
+      },
+      {
+        top: "900px",
+        left: "200px",
+        width: "385px",
+        height: "295px",
+        rotate: "0.8deg",
+      },
+      {
+        top: "1200px",
+        left: "200px",
+        width: "385px",
+        height: "295px",
+        rotate: "0.8deg",
+      },
+      {
+        top: "908px",
+        left: "600px",
+        width: "400px",
+        height: "590px",
+        rotate: "0.8deg",
+      },
+    ],
+  },
+  {
+    id: 5,
+    name: "Gold D Roger",
+    category: "Lovely",
+    src: "/frame/frame8.png",
+    maxPhotos: 6,
+    positions: [
+      /* Row 1 */
+      {
+        top: "90px",
+        left: "180px",
+        width: "350px",
+        height: "350px",
+        rotate: "0deg",
+      },
+      {
+        top: "90px",
+        left: "550px",
+        width: "350px",
+        height: "350px",
+        rotate: "0deg",
+      },
+
+      /* Row 2 */
+      {
+        top: "510px",
+        left: "180px",
+        width: "350px",
+        height: "350px",
+        rotate: "0deg",
+      },
+      {
+        top: "510px",
+
+        left: "550px",
+        width: "350px",
+        height: "350px",
+        rotate: "0deg",
+      },
+
+      /* Row 3 */
+      {
+        top: "915px",
+        left: "180px",
+        width: "350px",
+        height: "350px",
+        rotate: "0deg",
+      },
+      {
+        top: "915px",
+
+        left: "550px",
+        width: "350px",
+        height: "350px",
+        rotate: "0deg",
+      },
+    ],
+  },
+  {
+    id: 6,
+    name: "Cinema Story",
+    category: "Story",
+    src: "/frame/frame1.png",
+    maxPhotos: 3,
+
+    positions: [
+      {
+        top: "250px",
+        left: "250px",
+        width: "400px",
+        height: "500px",
+        rotate: "-0.5deg",
+      },
+      {
+        top: "990px",
+        left: "300px",
+        width: "400px",
+        height: "500px",
+        rotate: "-1.5deg",
+      },
+      {
+        top: "565px",
+        left: "600px",
+        width: "400px",
+        height: "500px",
+        rotate: "0.8deg",
+      },
+    ],
+  },
 ];

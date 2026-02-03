@@ -45,7 +45,7 @@ export default function InfernoButton({
       onClick={onClick}
       className={`
         relative px-10 py-3 rounded-full 
-        font-display text-xl tracking-[0.1em] uppercase
+        font-display text-xl tracking-0.1em uppercase
         transition-all duration-200
         ${className}
       `}

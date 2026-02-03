@@ -8,6 +8,7 @@ import InfernoButton from "@/components/ui/Button";
 import { usePhotoStore } from "@/store/usePhotoStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FRAMES } from "@/components/data/Frame";
+import { QRCodeSVG } from "qrcode.react";
 
 const FILTERS = [
   { name: "Original", class: "" },
@@ -26,6 +27,9 @@ const FILTERS = [
 
 export default function EditorPage() {
   const [selectedFilter, setSelectedFilter] = useState(FILTERS[0]);
+  const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
+  const [showQR, setShowQR] = useState(false);
+
   const stripRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -38,33 +42,40 @@ export default function EditorPage() {
 
   const photos = usePhotoStore((state) => state.capturedPhotos);
 
-  // --- LOGIC SCALING ---
+  // --- SCALING ---
   const DESIGN_WIDTH = 1200;
   const CANVAS_WIDTH = 340;
   const scaleFactor = CANVAS_WIDTH / DESIGN_WIDTH;
 
-  const handleDownload = async () => {
-    console.log("Mendownload Frame ID:", activeFrame.id);
-    if (stripRef.current === null) return;
+  // --- GENERATE QR ---
+  const handleGenerateQR = async () => {
+    if (!stripRef.current) return;
+
     try {
       const dataUrl = await toPng(stripRef.current, {
-        quality: 1.0,
-        pixelRatio: 3,
+        quality: 1,
+        pixelRatio: 2,
         cacheBust: true,
       });
-      const link = document.createElement("a");
-      link.download = `inferno-photobox-${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
+
+      // 🔥 CONVERT base64 → Blob → Blob URL
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      setDownloadUrl(blobUrl);
+      setShowQR(true);
     } catch (err) {
-      console.error("Gagal download:", err);
+      console.error("Gagal generate QR:", err);
     }
   };
+
+  const handlePrint = () => window.print();
 
   if (photos.length === 0) {
     return (
       <main
-        className="min-h-screen flex flex-col items-center justify-center text-white p-6"
+        className="min-h-screen flex flex-col items-center justify-center p-6"
         style={{ background: "var(--background-down)" }}>
         <h2 className="font-display text-2xl mb-4 text-gold">
           FOTONYA KOSONG!
@@ -89,13 +100,13 @@ export default function EditorPage() {
         PREVIEW & EDIT
       </motion.h2>
 
-      <div className="relative bg-black/40 p-6 rounded-[40px] backdrop-blur-md border border-white/5 mb-10 shadow-premium">
-        {/* CANVAS CONTAINER - Pakai class w-85 h-127.5 biar warning ilang */}
+      {/* PREVIEW */}
+      <div className="relative bg-black/40 p-6 rounded-[40px] mb-10 backdrop-blur-md border border-white/5 shadow-premium">
         <div
           ref={stripRef}
           key={activeFrame.id}
           className="relative w-85 h-127.5 overflow-hidden bg-[#120000]">
-          {/* LAYER 1: FOTO */}
+          {/* FOTO */}
           <div className="absolute inset-0 z-10">
             {activeFrame.positions.map((pos, index) => {
               const parseVal = (val: string) => parseFloat(val) * scaleFactor;
@@ -123,7 +134,7 @@ export default function EditorPage() {
             })}
           </div>
 
-          {/* LAYER 2: FRAME */}
+          {/* FRAME */}
           <div className="absolute inset-0 z-20 pointer-events-none">
             <Image
               src={activeFrame.src}
@@ -136,47 +147,74 @@ export default function EditorPage() {
         </div>
       </div>
 
-      {/* FILTER SELECTOR */}
+      {/* FILTER */}
       <div className="w-full max-w-2xl mb-12">
         <div className="flex justify-center gap-4 overflow-x-auto pb-4 no-scrollbar">
           {FILTERS.map((f) => (
             <button
               key={f.name}
               onClick={() => setSelectedFilter(f)}
-              className={`flex flex-col items-center gap-2 p-2 rounded-xl transition-all ${
+              className={`p-2 rounded-xl transition-all ${
                 selectedFilter.name === f.name
-                  ? "bg-gold/20 ring-gold ring-1"
+                  ? "bg-gold/20 ring-1 ring-gold"
                   : "bg-white/5"
               }`}>
               <div
-                className={`relative w-12 h-12 rounded-lg overflow-hidden ${f.class} shadow-lg`}>
+                className={`relative w-12 h-12 rounded-lg overflow-hidden ${f.class}`}>
                 <Image
                   src={photos[0]}
-                  alt="p"
+                  alt="preview"
                   fill
                   className="object-cover"
                   unoptimized
                 />
               </div>
-              <span className="text-[10px] font-display tracking-wider text-white/70">
-                {f.name}
-              </span>
+              <span className="text-[10px] text-white/70">{f.name}</span>
             </button>
           ))}
         </div>
       </div>
 
-      {/* ACTION BUTTONS */}
-      <div className="flex gap-6 items-center">
+      {/* ACTION */}
+      <div className="flex flex-col items-center gap-6">
+        {!showQR && (
+          <InfernoButton
+            text="GET QR CODE"
+            onClick={handleGenerateQR}
+            variant="gold"
+            className="px-10 py-4 shadow-premium"
+          />
+        )}
+
+        {showQR && downloadUrl && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-4 bg-black/40 p-6 rounded-3xl border border-white/10 backdrop-blur-md">
+            <p className="text-gold tracking-widest text-sm">
+              SCAN TO DOWNLOAD
+            </p>
+
+            <div className="bg-white p-4 rounded-xl">
+              <QRCodeSVG value={downloadUrl} size={180} level="M" />
+            </div>
+
+            <p className="text-white/60 text-xs text-center">
+              Scan QR ini untuk menyimpan foto
+            </p>
+          </motion.div>
+        )}
+
         <InfernoButton
-          text="DOWNLOAD"
-          onClick={handleDownload}
+          text="PRINT"
+          onClick={handlePrint}
           variant="gold"
-          className="px-10 py-4 shadow-premium"
+          className="px-8 py-4 opacity-80"
         />
+
         <button
           onClick={() => router.push("/")}
-          className="text-white/40 hover:text-gold uppercase text-xs font-display tracking-[0.2em] transition-colors">
+          className="text-white/40 hover:text-gold uppercase text-xs tracking-widest">
           BACK
         </button>
       </div>
