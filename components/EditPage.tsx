@@ -25,7 +25,6 @@ const FILTERS = [
   { name: "Soft Grain", class: "contrast-[1.1] brightness-[1.05]" },
 ];
 
-// --- WRAPPER UNTUK MENGATASI ERROR BUILD VERCEL ---
 export default function EditorPage() {
   return (
     <Suspense
@@ -39,11 +38,11 @@ export default function EditorPage() {
   );
 }
 
-// --- KOMPONEN UTAMA ---
 function EditorContent() {
   const [selectedFilter, setSelectedFilter] = useState(FILTERS[0]);
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
   const [showQR, setShowQR] = useState(false);
+  const [loadingQR, setLoadingQR] = useState(false);
 
   const stripRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -57,36 +56,46 @@ function EditorContent() {
 
   const photos = usePhotoStore((state) => state.capturedPhotos);
 
-  // --- LOGIC SCALING ---
   const DESIGN_WIDTH = 1200;
   const CANVAS_WIDTH = 340;
   const scaleFactor = CANVAS_WIDTH / DESIGN_WIDTH;
 
+  // 🔥 GENERATE + UPLOAD + QR
   const handleGenerateQR = async () => {
     if (!stripRef.current) return;
 
     try {
+      setLoadingQR(true);
+
+      // 1. Generate image
       const dataUrl = await toPng(stripRef.current, {
         quality: 1,
         pixelRatio: 2,
         cacheBust: true,
       });
 
-      // Simpan sebagai Blob URL
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const blobUrl = URL.createObjectURL(blob);
+      // 2. Upload ke Vercel Blob
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: dataUrl }),
+      });
 
-      setDownloadUrl(blobUrl);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      // 3. Public URL → QR
+      setDownloadUrl(data.url);
       setShowQR(true);
     } catch (err) {
       console.error("Gagal generate QR:", err);
+      alert("Gagal membuat QR. Coba lagi.");
+    } finally {
+      setLoadingQR(false);
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   if (photos.length === 0) {
     return (
@@ -109,33 +118,6 @@ function EditorContent() {
     <main
       className="min-h-screen py-10 px-6 flex flex-col items-center"
       style={{ background: "var(--background-down)" }}>
-      {/* CSS KHUSUS PRINT */}
-      <style jsx global>{`
-        @media print {
-          .no-print {
-            display: none !important;
-          }
-          body {
-            background: white !important;
-            margin: 0;
-            padding: 0;
-          }
-          main {
-            background: transparent !important;
-            padding: 0 !important;
-          }
-          .print-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            box-shadow: none !important;
-            border: none !important;
-            padding: 0 !important;
-            background: transparent !important;
-          }
-        }
-      `}</style>
-
       <motion.h2
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -143,13 +125,12 @@ function EditorContent() {
         PREVIEW & EDIT
       </motion.h2>
 
-      {/* CANVAS CONTAINER */}
-      <div className="print-container relative bg-black/40 p-6 rounded-[40px] mb-10 backdrop-blur-md border border-white/5 shadow-premium">
+      {/* CANVAS */}
+      <div className="relative bg-black/40 p-6 rounded-[40px] mb-10 backdrop-blur-md border border-white/5 shadow-premium">
         <div
           ref={stripRef}
           key={activeFrame.id}
           className="relative w-85 h-127.5 overflow-hidden bg-[#120000]">
-          {/* LAYER 1: FOTO */}
           <div className="absolute inset-0 z-10">
             {activeFrame.positions.map((pos, index) => {
               const parseVal = (val: string) => parseFloat(val) * scaleFactor;
@@ -176,7 +157,6 @@ function EditorContent() {
             })}
           </div>
 
-          {/* LAYER 2: FRAME */}
           <div className="absolute inset-0 z-20 pointer-events-none">
             <Image
               src={activeFrame.src}
@@ -189,83 +169,48 @@ function EditorContent() {
         </div>
       </div>
 
-      {/* UI CONTROLS - Sembunyikan saat print */}
-      <div className="no-print w-full flex flex-col items-center">
-        {/* FILTER SELECTOR */}
-        <div className="w-full max-w-2xl mb-12">
-          <div className="flex justify-center gap-4 overflow-x-auto pb-4 no-scrollbar">
-            {FILTERS.map((f) => (
-              <button
-                key={f.name}
-                onClick={() => setSelectedFilter(f)}
-                className={`flex flex-col items-center gap-2 p-2 rounded-xl transition-all ${
-                  selectedFilter.name === f.name
-                    ? "bg-gold/20 ring-1 ring-gold"
-                    : "bg-white/5"
-                }`}>
-                <div
-                  className={`relative w-12 h-12 rounded-lg overflow-hidden ${f.class} shadow-lg`}>
-                  <Image
-                    src={photos[0]}
-                    alt="p"
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                </div>
-                <span className="text-[10px] font-display tracking-wider text-white/70">
-                  {f.name}
-                </span>
-              </button>
-            ))}
-          </div>
-        </div>
+      {/* CONTROLS */}
+      <div className="flex flex-col items-center gap-8">
+        {showQR && downloadUrl && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="flex flex-col items-center gap-4 bg-black/60 p-6 rounded-3xl border border-gold/20 backdrop-blur-xl shadow-2xl">
+            <p className="text-gold tracking-[0.2em] text-[10px] uppercase">
+              Scan to Download
+            </p>
+            <div className="bg-white p-3 rounded-xl">
+              <QRCodeSVG value={downloadUrl} size={150} level="M" />
+            </div>
+            <button
+              onClick={() => setShowQR(false)}
+              className="text-white/40 text-[9px] hover:text-white">
+              CLOSE QR
+            </button>
+          </motion.div>
+        )}
 
-        {/* ACTION BUTTONS & QR */}
-        <div className="flex flex-col items-center gap-8">
-          {showQR && downloadUrl && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="flex flex-col items-center gap-4 bg-black/60 p-6 rounded-3xl border border-gold/20 backdrop-blur-xl shadow-2xl">
-              <p className="text-gold tracking-[0.2em] text-[10px] font-bold uppercase">
-                Scan to Download
-              </p>
-              <div className="bg-white p-3 rounded-xl">
-                <QRCodeSVG value={downloadUrl} size={150} level="H" />
-              </div>
-              <button
-                onClick={() => setShowQR(false)}
-                className="text-white/40 text-[9px] hover:text-white transition-colors">
-                CLOSE QR
-              </button>
-            </motion.div>
-          )}
+        {!showQR && (
+          <InfernoButton
+            text={loadingQR ? "GENERATING..." : "GET QR CODE"}
+            onClick={handleGenerateQR}
+            variant="gold"
+            className="px-10 py-4 shadow-premium"
+          />
+        )}
 
-          <div className="flex gap-4 items-center">
-            {!showQR && (
-              <InfernoButton
-                text="GET QR CODE"
-                onClick={handleGenerateQR}
-                variant="gold"
-                className="px-10 py-4 shadow-premium"
-              />
-            )}
+        <InfernoButton
+          text="PRINT"
+          onClick={handlePrint}
+          variant="gold"
+          className="px-10 py-4 shadow-premium opacity-70"
+        />
 
-            <InfernoButton
-              text="PRINT"
-              onClick={handlePrint}
-              variant="gold"
-              className={`px-10 py-4 shadow-premium ${!showQR ? "opacity-70" : ""}`}
-            />
-          </div>
-
-          <button
-            onClick={() => router.push("/")}
-            className="text-white/40 hover:text-gold uppercase text-xs font-display tracking-[0.2em] transition-colors">
-            BACK TO HOME
-          </button>
-        </div>
+        <button
+          onClick={() => router.push("/")}
+          className="text-white/40 hover:text-gold uppercase text-xs tracking-[0.2em]">
+          BACK TO HOME
+        </button>
       </div>
     </main>
   );
