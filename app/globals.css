@@ -76,15 +76,6 @@ h2,
   overflow: hidden;
 }
 
-/* Grain Overlay (Optional MVP+) [cite: 8] */
-.grain-texture {
-  position: fixed;
-  inset: 0;
-  opacity: 0.03;
-  pointer-events: none;
-  background-image: url("https://grains.com/texture.png"); /* Ganti dengan path lokal */
-}
-
 /* Button Customization  */
 .btn-primary {
   background: linear-gradient(to right, #c62828, #7a0c0c);

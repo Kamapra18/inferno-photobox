@@ -9,6 +9,7 @@ interface InfernoButtonProps {
   onClick?: () => void;
   variant?: "gold" | "red";
   className?: string;
+  disabled?: boolean;
 }
 
 export default function InfernoButton({

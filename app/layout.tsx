@@ -37,7 +37,7 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${bebasNeue.variable} ${spaceMono.variable} antialiased`}>
         {/* Grain Overlay global agar terasa Analog Feel [cite: 1, 4] */}
-        <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-50 bg-[url('/grain.png')]" />
+        {/* <div className="fixed inset-0 pointer-events-none opacity-[0.03] z-50 bg-[url('/grain.png')]" /> */}
 
         {children}
       </body>

@@ -14,7 +14,7 @@ export default function FrameSelection() {
       className="min-h-screen py-20 px-6 relative overflow-hidden"
       style={{ background: "var(--background-down)" }}>
       {/* Grain Overlay */}
-      <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay bg-[url('/grain-texture.png')]" />
+      {/* <div className="absolute inset-0 pointer-events-none opacity-20 mix-blend-overlay bg-[url('/grain-texture.png')]" /> */}
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* HEADER */}
