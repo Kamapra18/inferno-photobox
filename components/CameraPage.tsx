@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useMemo,
   useEffect,
+  Suspense, // Tambahkan Suspense
 } from "react";
 import Webcam from "react-webcam";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,7 +16,22 @@ import InfernoButton from "@/components/ui/Button";
 import { usePhotoStore } from "@/store/usePhotoStore";
 import { FRAMES } from "@/components/data/Frame";
 
+// --- 1. Bungkus Komponen Utama ---
 export default function CameraPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-black flex items-center justify-center text-gold font-display tracking-widest">
+          INITIALIZING CAMERA...
+        </div>
+      }>
+      <CameraContent />
+    </Suspense>
+  );
+}
+
+// --- 2. Pindahkan Semua Logic ke Sini ---
+function CameraContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
@@ -36,9 +52,6 @@ export default function CameraPage() {
   const [isBlur, setIsBlur] = useState(false);
   const [timerSetting, setTimerSetting] = useState(3);
 
-  // ============================
-  // CAMERA CONTROL (NEW)
-  // ============================
   const [facingMode, setFacingMode] = useState<"user" | "environment">("user");
   const isFrontCamera = facingMode === "user";
 
@@ -51,7 +64,6 @@ export default function CameraPage() {
   const switchCamera = () => {
     setFacingMode((prev) => (prev === "user" ? "environment" : "user"));
   };
-  // ============================
 
   const handleFinalize = () => {
     if (photos.length === currentFrame.maxPhotos) {
@@ -121,7 +133,6 @@ export default function CameraPage() {
 
       {/* TOP MENU */}
       <div className="relative z-10 flex flex-wrap gap-4 mb-8 items-center bg-white/5 p-3 px-6 rounded-full backdrop-blur-md border border-white/10 shadow-lg">
-        {/* BACK */}
         <button
           onClick={() => router.push("/frame")}
           className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-widest text-gold hover:text-white transition">
@@ -141,7 +152,6 @@ export default function CameraPage() {
 
         <div className="h-4 w-px bg-white/10" />
 
-        {/* UPLOAD */}
         <button
           onClick={() => fileInputRef.current?.click()}
           className="text-[10px] uppercase font-bold tracking-widest text-white/70 hover:text-white transition">
@@ -157,7 +167,6 @@ export default function CameraPage() {
 
         <div className="h-4 w-px bg-white/10" />
 
-        {/* TIMER */}
         <div className="flex items-center gap-2">
           <span className="text-[10px] text-white/40 uppercase">Timer:</span>
           <select
@@ -174,18 +183,14 @@ export default function CameraPage() {
 
         <div className="h-4 w-px bg-white/10" />
 
-        {/* FOCUS */}
         <button
           onClick={() => setIsBlur(!isBlur)}
-          className={`text-[10px] uppercase font-bold transition ${
-            isBlur ? "text-gold" : "text-white/70"
-          }`}>
+          className={`text-[10px] uppercase font-bold transition ${isBlur ? "text-gold" : "text-white/70"}`}>
           Focus: {isBlur ? "Soft" : "Sharp"}
         </button>
 
         <div className="h-4 w-px bg-white/10" />
 
-        {/* NEW: FLIP CAMERA (HP) */}
         <button
           onClick={switchCamera}
           className="text-[10px] uppercase font-bold tracking-widest text-white/70 hover:text-gold transition">
@@ -201,16 +206,13 @@ export default function CameraPage() {
             key={facingMode}
             ref={webcamRef}
             screenshotFormat="image/png"
-            className={`absolute inset-0 w-full h-full object-cover ${
-              isFrontCamera ? "mirror" : ""
-            }`}
+            className={`absolute inset-0 w-full h-full object-cover ${isFrontCamera ? "mirror" : ""}`}
             videoConstraints={{
               facingMode,
               aspectRatio: 3 / 4,
             }}
           />
 
-          {/* BLUR */}
           <AnimatePresence>
             {isBlur && (
               <motion.div
@@ -228,7 +230,6 @@ export default function CameraPage() {
             )}
           </AnimatePresence>
 
-          {/* COUNTDOWN */}
           <AnimatePresence>
             {countdown !== null && (
               <motion.div
@@ -312,12 +313,12 @@ export default function CameraPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-110 flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
+            className="fixed inset-0 z-[110] flex items-center justify-center bg-black/90 backdrop-blur-md p-6">
             <motion.div
               initial={{ scale: 0.9, y: 20 }}
               animate={{ scale: 1, y: 0 }}
-              className="bg-card rounded-3xl p-6 max-w-sm w-full shadow-premium">
-              <h3 className="text-[#2b0202] font-display text-2xl text-center mb-4 uppercase">
+              className="bg-white rounded-3xl p-6 max-w-sm w-full shadow-premium">
+              <h3 className="text-black font-display text-2xl text-center mb-4 uppercase">
                 Nice Shot!
               </h3>
               <div className="relative aspect-3/4 rounded-xl overflow-hidden mb-6 shadow-2xl ring-4 ring-black/5">
